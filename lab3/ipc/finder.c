@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     bzero(cmdbuf, BSIZE);
     sprintf(cmdbuf, "%s %s -name \'*\'.[ch]", FIND_EXEC, argv[1]);
     dup2(fd1[1], STDOUT_FILENO);
-    if(execl(FIND_EXEC, cmdbuf, (char *) 0) < 0) {
+    if(execl(BASH_EXEC, BASH_EXEC, cmdbuf, (char *) 0) < 0) {
       fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
       return EXIT_FAILURE;
     }
@@ -46,9 +46,11 @@ int main(int argc, char *argv[])
 
   pid_2 = fork();
   if (pid_2 == 0) {
+    bzero(cmdbuf, BSIZE);
+    sprintf(cmdbuf, "%s %s -c %s", XARGS_EXEC, GREP_EXEC, argv[2]);
     dup2(STDIN_FILENO, fd1[0]);
-
-    if(execl(XARGS_EXEC, GREP_EXEC, cmdbuf, (char *) 0) < 0) {
+ 
+    if(execl(BASH_EXEC, BASH_EXEC, cmdbuf, (char *) 0) < 0) {
       fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
       return EXIT_FAILURE;
     }
