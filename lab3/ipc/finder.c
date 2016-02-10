@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
       fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
       return EXIT_FAILURE;
     }
-       /* First Child */
+    /* First Child */
     exit(0);
   }
 
@@ -60,6 +60,7 @@ int main(int argc, char *argv[])
   pid_3 = fork();
   if (pid_3 == 0) {
     /* Third Child */
+    exit(0);
   }
 
   pid_4 = fork();
