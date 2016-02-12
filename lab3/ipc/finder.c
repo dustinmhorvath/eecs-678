@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
   int fd1[2];
   int fd2[2];
   int fd3[2];
-  int pipe(fd1);
-  int pipe(fd2);
-  int pipe(fd3);
+  pipe(fd1);
+  pipe(fd2);
+  pipe(fd3);
   char cmdbuf[BSIZE];
 
   if (argc != 4) {
@@ -37,13 +37,13 @@ int main(int argc, char *argv[])
     sprintf(cmdbuf, "%s %s -name \'*\'.[ch]", FIND_EXEC, argv[1]);
     dup2(fd1[1], STDOUT_FILENO);
 
-    close(fd1[1]);
+    close(fd1[0]);
     close(fd2[0]);
     close(fd2[1]);
     close(fd3[0]);
     close(fd3[1]);
 
-    if(execl(BASH_EXEC, BASH_EXEC, "-c", cmdbuf, (char *) 0) < 0) {
+    if(execl(BASH_EXEC, BASH_EXEC, "-c", cmdbuf, (char *)0) < 0) {
       fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
       return EXIT_FAILURE;
     }
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     close(fd3[0]);
     close(fd3[1]);
 
-    if(execl(XARGS_EXEC, XARGS_EXEC, GREP_EXEC, "-c",  argv[2], (char *) 0) < 0) {
+    if(execl(XARGS_EXEC, XARGS_EXEC, GREP_EXEC, "-c",  argv[2], (char *)0) < 0) {
       fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
       return EXIT_FAILURE;
     }
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     close(fd2[1]);
     close(fd3[0]);
 
-    if(execl(SORT_EXEC, SORT_EXEC, "-t", ":", "+1.0", "-2.0", "--numeric", "--reverse", (char *) 0) < 0) {
+    if(execl(SORT_EXEC, SORT_EXEC, "-t", ":", "+1.0", "-2.0", "--numeric", "--reverse", (char *)0) < 0) {
       fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
       return EXIT_FAILURE;
     }
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
     close(fd2[1]);
     close(fd3[1]);
 
-    if(execl(HEAD_EXEC, HEAD_EXEC, "--lines", argv[3], (char *) 0) < 0) {
+    if(execl(HEAD_EXEC, HEAD_EXEC, "--lines", argv[3], (char *)0) < 0) {
       fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
       return EXIT_FAILURE;
     }
