@@ -36,7 +36,14 @@ int main(int argc, char *argv[])
     bzero(cmdbuf, BSIZE);
     sprintf(cmdbuf, "%s %s -name \'*\'.[ch]", FIND_EXEC, argv[1]);
     dup2(fd1[1], STDOUT_FILENO);
-    if(execl(BASH_EXEC, BASH_EXEC, cmdbuf, (char *) 0) < 0) {
+
+    close(fd1[1]);
+    close(fd2[0]);
+    close(fd2[1]);
+    close(fd3[0]);
+    close(fd3[1]);
+
+    if(execl(BASH_EXEC, BASH_EXEC, "-c", cmdbuf, (char *) 0) < 0) {
       fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
       return EXIT_FAILURE;
     }
@@ -46,30 +53,71 @@ int main(int argc, char *argv[])
 
   pid_2 = fork();
   if (pid_2 == 0) {
-    bzero(cmdbuf, BSIZE);
-    sprintf(cmdbuf, "%s %s -c %s", XARGS_EXEC, GREP_EXEC, argv[2]);
-    dup2(STDIN_FILENO, fd1[0]);
- 
-    if(execl(BASH_EXEC, BASH_EXEC, cmdbuf, (char *) 0) < 0) {
+    dup2(fd1[0], STDIN_FILENO);
+    dup2(fd2[1], STDOUT_FILENO);
+
+    close(fd1[1]);
+    close(fd2[0]);
+    close(fd3[0]);
+    close(fd3[1]);
+
+    if(execl(XARGS_EXEC, XARGS_EXEC, GREP_EXEC, "-c",  argv[2], (char *) 0) < 0) {
       fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
       return EXIT_FAILURE;
     }
-    
+
     /* Second Child */
     exit(0);
   }
 
   pid_3 = fork();
   if (pid_3 == 0) {
+    dup2(fd2[0], STDIN_FILENO);
+    dup2(fd3[1], STDOUT_FILENO);
+
+    close(fd1[0]);
+    close(fd1[1]);
+    close(fd2[1]);
+    close(fd3[0]);
+
+    if(execl(SORT_EXEC, SORT_EXEC, "-t", ":", "+1.0", "-2.0", "--numeric", "--reverse", (char *) 0) < 0) {
+      fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
+      return EXIT_FAILURE;
+    }
+
     /* Third Child */
     exit(0);
   }
 
   pid_4 = fork();
   if (pid_4 == 0) {
+    dup2(fd3[0], STDIN_FILENO);
+
+    close(fd1[0]);
+    close(fd1[1]);
+    close(fd2[0]);
+    close(fd2[1]);
+    close(fd3[1]);
+
+    if(execl(HEAD_EXEC, HEAD_EXEC, "--lines", argv[3], (char *) 0) < 0) {
+      fprintf(stderr, "\nError execing find. ERROR#%d\n", errno);
+      return EXIT_FAILURE;
+    }
+
     /* Fourth Child */
     exit(0);
   }
+
+  close(fd1[0]);
+  close(fd1[1]);
+  close(fd2[0]);
+  close(fd2[1]);
+  close(fd3[0]);
+  close(fd3[1]);
+
+
+
+
 
   if ((waitpid(pid_1, &status, 0)) == -1) {
     fprintf(stderr, "Process 1 encountered an error. ERROR%d", errno);
