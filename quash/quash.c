@@ -72,7 +72,7 @@ bool get_command(command_t* cmd, FILE* in) {
 
 
 
-/*char** str_split(char* a_str, const char a_delim){
+char** str_split(char* a_str, const char a_delim){
   char** result    = 0;
   size_t count     = 0;
   char* tmp        = a_str;
@@ -107,7 +107,7 @@ bool get_command(command_t* cmd, FILE* in) {
   }
 
   return result;
-}*/
+}
 
 
 /*
@@ -146,23 +146,12 @@ int main(int argc, char** argv) {
       terminate(); // Exit Quash
     else{
       // Split command by |
-      //char** fields = str_split(cmd.cmdstr, '|');
+      char** fields = str_split(cmd.cmdstr, '|');
       
-      char *array[10];
-      int i=0;
-
-      array[i] = strtok_r(cmd.cmdstr,"|");
-
-      while(array[i]!=NULL)
-      {
-        array[++i] = strtok_r(NULL,"|");
-      }
-
-
-      if (array){
-        for (int i = 0; array[i]; i++){
+      if (fields){
+        for (int i = 0; *(fields + i); i++){
           if ((pid=fork()) == 0) {
-            printf("%d\n", array[i]);
+            //printf("%d\n", array[i]);
 
             if(first){
               first = false;
@@ -175,7 +164,7 @@ int main(int argc, char** argv) {
 //              dup2(io[1],STDOUT_FILENO);
             //}
 
-            if((status = system(array[i])) < 0){
+            if((status = system(*(fields +i))) < 0){
               fprintf(stderr, "\nError execing. ERROR#%d:%d\n", errno, strerror_r());
               return EXIT_FAILURE;
             }
