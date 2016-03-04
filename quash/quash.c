@@ -50,6 +50,7 @@ void terminate() {
 }
 
 bool get_command(command_t* cmd, FILE* in) {
+  printf("Quash: ");
   if (fgets(cmd->cmdstr, MAX_COMMAND_LENGTH, in) != NULL) {
     size_t len = strlen(cmd->cmdstr);
     char last_char = cmd->cmdstr[len - 1];
@@ -129,6 +130,11 @@ int exec_command(char* input){
     int i;
     for (i = 0; *(tokens + i); i++){
       if ((pid=fork()) == 0) {
+        if(first){
+          first = false;
+
+        }
+
         if(status = system( *(tokens + i) ) < 0){
           fprintf(stderr, "\nError execing. ERROR#%d:%d\n", errno, strerror_r());
           return EXIT_FAILURE;
@@ -138,6 +144,10 @@ int exec_command(char* input){
       
       
         exit(0);
+      }
+      if ((waitpid(pid, &status, 0)) == -1) {
+        fprintf(stderr, "Process %d encountered an error. ERROR%d", i, errno);
+        return EXIT_FAILURE;
       }
 
 
