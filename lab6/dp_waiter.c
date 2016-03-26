@@ -158,8 +158,8 @@ static void *dp_thread(void *arg)
       pthread_cond_wait(&(me -> can_eat), &waiter);
     }
     
-    pthread_mutex_lock(left_chop(me));
-    pthread_mutex_lock(right_chop(me));
+//    pthread_mutex_lock(left_chop(me));
+//    pthread_mutex_lock(right_chop(me));
 
     pthread_mutex_unlock(&waiter);
     
@@ -176,8 +176,8 @@ static void *dp_thread(void *arg)
     /*
      * Release both chopsticks: WAITER SOLUTION
      */
-    pthread_mutex_unlock(right_chop(me));
-    pthread_mutex_unlock(left_chop(me));
+//    pthread_mutex_unlock(right_chop(me));
+//    pthread_mutex_unlock(left_chop(me));
     
     
 
