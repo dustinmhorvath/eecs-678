@@ -9,7 +9,7 @@
  * much total work the produceers and consumers should perform
  */
 #define QUEUESIZE 5
-#define WORK_MAX 10
+#define WORK_MAX 30
 
 /*
  * These constants specify how much CPU bound work the producer and
@@ -151,7 +151,7 @@ void queueRemove (queue *q, int *out)
 
   /*
    * Wrap the index around to zero if it reached the size of the
-   * array. This implements the circualrity of the queue int he array.
+   * array. This implements the circualrity of the queue in the array.
    */
   if (q->head == QUEUESIZE)
     q->head = 0;
@@ -225,7 +225,7 @@ void msleep(unsigned int milli_seconds)
    * Sleep for the required period. The first parameter specifies how
    * long. In theory this thread can be awakened before the period is
    * over, perhaps by a signal. If so the timespec specified by the
-   * second argument is filled in with how much time int he original
+   * second argument is filled in with how much time in the original
    * request is left. We use the same one. If this happens, we just
    * call nanosleep again to sleep for what remains of the origianl
    * request.
