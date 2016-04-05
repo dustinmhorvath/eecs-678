@@ -9,13 +9,13 @@
  * much total work the produceers and consumers should perform
  */
 #define QUEUESIZE 5
-#define WORK_MAX 30
+#define WORK_MAX 10
 
 /*
  * These constants specify how much CPU bound work the producer and
  * consumer do when processing an item. They also define how long each
  * blocks when producing an item. Work and blocking are implemented
- * int he do_work() routine that uses the msleep() routine to block
+ * in the do_work() routine that uses the msleep() routine to block
  * for at least the specified number of milliseconds.
  */
 #define PRODUCER_CPU   25
@@ -288,8 +288,11 @@ void *producer (void *parg)
      * If the queue is full, we have no place to put anything we
      * produce, so wait until it is not full.
      */
+    pthread_mutex_lock(fifo->mutex);
+
     while (fifo->full && *total_produced != WORK_MAX) {
       printf ("prod %d:  FULL.\n", my_tid);
+      pthread_cond_wait(fifo->notFull, fifo->mutex);
     }
 
     /*
@@ -297,6 +300,7 @@ void *producer (void *parg)
      * the configured maximum, if so, we can quit.
      */
     if (*total_produced >= WORK_MAX) {
+      pthread_mutex_unlock(fifo->mutex);
       break;
     }
 
@@ -307,6 +311,8 @@ void *producer (void *parg)
      */
     item_produced = (*total_produced)++;
     queueAdd (fifo, item_produced);
+    pthread_mutex_unlock(fifo->mutex);
+    pthread_cond_broadcast(fifo->notEmpty);
 
     /*
      * Announce the production outside the critical section 
@@ -342,8 +348,10 @@ void *consumer (void *carg)
      * If the queue is empty, there is nothing to do, so wait until it
      * si not empty.
      */
+    pthread_mutex_lock(fifo->mutex);
     while (fifo->empty && *total_consumed != WORK_MAX) {
       printf ("con %d:   EMPTY.\n", my_tid);
+      pthread_cond_wait(fifo->notEmpty, fifo->mutex);
     }
 
     /*
@@ -351,6 +359,7 @@ void *consumer (void *carg)
      * stop
      */
     if (*total_consumed >= WORK_MAX) {
+      pthread_mutex_unlock(fifo->mutex);
       break;
     }
 
@@ -362,7 +371,8 @@ void *consumer (void *carg)
      */
     queueRemove (fifo, &item_consumed);
     (*total_consumed)++;
-
+    pthread_mutex_unlock(fifo->mutex);
+    pthread_cond_broadcast(fifo->notFull);
 
     /*
      * Do work outside the critical region to consume the item
