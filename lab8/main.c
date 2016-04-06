@@ -10,11 +10,16 @@ int priority (const void *a, const void *b){
   int* first = (int*)a;
   int* second = (int*)b;
 
-  //const int *ia = (const int *)a;
-  //const int *ib = (const int *)b;
-
   return second[2] - first[2];
 }
+
+int arrivaltime (const void *a, const void *b){
+  int* first = (int*)a;
+  int* second = (int*)b;
+
+  return first[1] - second[1];
+}
+
 
 int main (int argc, char *argv[]){
   //void qsort(void *base, size_t nmemb, size_t size, int (*compar) (const void *, const void *)
@@ -44,8 +49,18 @@ int main (int argc, char *argv[]){
   }
   //free(readdata);
 
-
+  printf("\nSorting by priority, descending.\n");
   qsort((void*) array, counter/3, 3*sizeof(int), priority);
+
+  for(int i = 0; i < counter/3; i++){
+    for(int j = 0; j < 3; j++){
+      printf("%d ", array[i][j]);
+    }
+    printf("\n");
+  }
+
+  printf("\nSorting by arrival time, ascending.\n");
+  qsort((void*) array, counter/3, 3*sizeof(int), arrivaltime);
 
   for(int i = 0; i < counter/3; i++){
     for(int j = 0; j < 3; j++){
