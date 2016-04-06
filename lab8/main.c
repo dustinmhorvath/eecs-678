@@ -26,6 +26,7 @@ int main (int argc, char *argv[]){
 
   int* readdata = (int*)malloc(DATASIZE*sizeof(int));
 
+  printf("\nReading file...\n");
 
   FILE* file = fopen ("process.txt", "r");
   int value = 0;
@@ -39,6 +40,7 @@ int main (int argc, char *argv[]){
   }
   fclose (file); 
 
+  printf("Massaging into 2d array...\n");
   int array[DATASIZE][3];
   int newcounter = 0;
   for(int i = 0; i < counter/3; i++){
@@ -69,6 +71,7 @@ int main (int argc, char *argv[]){
     printf("\n");
   }
 
+  printf("\nClosing...\n\n");
 
   return 0;
 }
