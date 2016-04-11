@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define DATASIZE 500
+#define DATASIZE 1000
 
 int priority (const void *a, const void *b){
   int* first = (int*)a;
@@ -22,7 +22,6 @@ int arrivaltime (const void *a, const void *b){
 
 
 int main (int argc, char *argv[]){
-  //void qsort(void *base, size_t nmemb, size_t size, int (*compar) (const void *, const void *)
 
   int* readdata = (int*)malloc(DATASIZE*sizeof(int));
 
@@ -43,8 +42,10 @@ int main (int argc, char *argv[]){
   printf("Massaging into 2d array...\n");
   int array[DATASIZE][3];
   int newcounter = 0;
-  for(int i = 0; i < counter/3; i++){
-    for(int j = 0; j < 3; j++){
+  int i = 0;
+  int j = 0;
+  for(i = 0; i < counter/3; i++){
+    for(j = 0; j < 3; j++){
       array[i][j] = readdata[newcounter];
       newcounter++;
     }
@@ -54,8 +55,8 @@ int main (int argc, char *argv[]){
   printf("\nSorting by priority, descending.\n");
   qsort((void*) array, counter/3, 3*sizeof(int), priority);
 
-  for(int i = 0; i < counter/3; i++){
-    for(int j = 0; j < 3; j++){
+  for(i = 0; i < counter/3; i++){
+    for(j = 0; j < 3; j++){
       printf("%d ", array[i][j]);
     }
     printf("\n");
@@ -64,8 +65,8 @@ int main (int argc, char *argv[]){
   printf("\nSorting by arrival time, ascending.\n");
   qsort((void*) array, counter/3, 3*sizeof(int), arrivaltime);
 
-  for(int i = 0; i < counter/3; i++){
-    for(int j = 0; j < 3; j++){
+  for(i = 0; i < counter/3; i++){
+    for(j = 0; j < 3; j++){
       printf("%d ", array[i][j]);
     }
     printf("\n");
