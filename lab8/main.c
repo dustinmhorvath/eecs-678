@@ -74,6 +74,8 @@ int main (int argc, char *argv[]){
 
   printf("\nClosing...\n\n");
 
+  free(readdata);
+
   return 0;
 }
 
