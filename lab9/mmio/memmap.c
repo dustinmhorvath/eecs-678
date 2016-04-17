@@ -67,7 +67,6 @@ int main (int argc, char *argv[])
    * 2. go to the location corresponding to the last byte 
    */
 
-  int source = lseek(fdin, 0, SEEK_CUR);
   failure = lseek(fdin, statbuf.st_size - 1, SEEK_CUR);
   if(failure < 0){
     err_sys("Can't read to end of file.");
@@ -77,8 +76,7 @@ int main (int argc, char *argv[])
    * 3. write a dummy byte at the last location 
    */
 
-  int dest = lseek(fdout, 0, SEEK_CUR);
-  failure = write(fdout, " ", sizeof(char));
+  failure = write(fdout, " ", statbuf.st_size);
   if(failure < 0){
     err_sys("Failed to write a bit to file.");
 
@@ -88,13 +86,13 @@ int main (int argc, char *argv[])
    * 4. mmap the input file 
    */
 
-  mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fdin, 0);
+  FILE* source = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fdin, 0);
 
   /* 
    * 5. mmap the output file 
    */
 
-  mmap(NULL, statbuf.st_size+sizeof(char), PROT_WRITE, MAP_SHARED, fdout, 0);
+  FILE* destination = mmap(NULL, statbuf.st_size, PROT_WRITE, MAP_SHARED, fdout, 0);
   
   /* 
    * 6. copy the input file to the output file 
@@ -105,8 +103,7 @@ int main (int argc, char *argv[])
      */
    // *dst = *src;
 
-
-  memcpy(dest, source, statbuf.st_size);
+  memcpy(destination, source, statbuf.st_size);
 
 } 
 
