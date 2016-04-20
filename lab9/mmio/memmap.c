@@ -58,16 +58,20 @@ int main (int argc, char *argv[])
    * 1. find size of input file 
    */
 
+  int size = 0;
   int failure = fstat(fdin, &statbuf);
   if(failure < 0){
     err_sys("can't get size of file");
+  }
+  else{
+    size = statbuf.st_size;
   }
 
   /* 
    * 2. go to the location corresponding to the last byte 
    */
 
-  failure = lseek(fdin, statbuf.st_size - 1, SEEK_CUR);
+  failure = lseek(fdout, size - 1, SEEK_SET);
   if(failure < 0){
     err_sys("Can't read to end of file.");
   }
@@ -76,24 +80,27 @@ int main (int argc, char *argv[])
    * 3. write a dummy byte at the last location 
    */
 
-  failure = write(fdout, " ", statbuf.st_size);
+  failure = write(fdout, buf, 1);
   if(failure < 0){
     err_sys("Failed to write a bit to file.");
 
   }
-  
+  else{
+    printf("Successfully wrote a byte.\n");
+  }
+
   /* 
    * 4. mmap the input file 
    */
 
-  FILE* source = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fdin, 0);
+  src = mmap(NULL, size, PROT_READ, MAP_SHARED, fdin, 0);
 
   /* 
    * 5. mmap the output file 
    */
 
-  FILE* destination = mmap(NULL, statbuf.st_size, PROT_WRITE, MAP_SHARED, fdout, 0);
-  
+  //FILE* destination = mmap(NULL, size, PROT_WRITE, MAP_SHARED, fdout, 0);
+  dst = mmap(NULL, size, (PROT_READ | PROT_WRITE), MAP_SHARED, fdout, 0);  
   /* 
    * 6. copy the input file to the output file 
    */
@@ -103,7 +110,7 @@ int main (int argc, char *argv[])
      */
    // *dst = *src;
 
-  memcpy(destination, source, statbuf.st_size);
+  memcpy(dst, src, size);
 
 } 
 
