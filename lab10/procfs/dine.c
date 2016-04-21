@@ -17,8 +17,7 @@
 #define FIELDS_TO_IGNORE 13
 
 #define DEADLOCK 1
-//#define ACTIVE_DURATION 200
-#define ACTIVE_DURATION 1000
+#define ACTIVE_DURATION 200
 
 typedef struct {
   pthread_t thread;
@@ -99,7 +98,7 @@ static void *dp_thread(void *arg)
   philosopher *me;
 
   me = (philosopher *) arg;
-    
+
   me->tid = gettid();
 
   while (!stop) {
@@ -172,7 +171,7 @@ void set_table()
   for (i = 0; i < NUM_PHILS; i++) {
     pthread_create(&(diners[i].thread), NULL, dp_thread, &diners[i]);
   }
-    
+
   /*
    * Stall until the diners initialize their tids 
    */
@@ -186,7 +185,7 @@ void set_table()
 void print_progress()
 {
   int i;
-    
+
   char buf[MAX_BUF];
 
   printf ("\nUser time:\t");
@@ -197,7 +196,7 @@ void print_progress()
     else 
       printf("%s\t", buf);
   }
-     
+
   printf ("\nSystem time:\t");
   for (i = 0; i < NUM_PHILS; i++) {
     sprintf(buf, "%lu / %lu", sys_progress[i], sys_time[i]);
@@ -206,7 +205,7 @@ void print_progress()
     else 
       printf("%s\t", buf);
   }
-     
+
   printf("\n");
 }
 
@@ -217,7 +216,7 @@ int check_for_deadlock()
   int   i;
   int   j;
   FILE *statf;
-  
+
 
   unsigned long new_sys_time;
   unsigned long new_user_time;
@@ -229,7 +228,7 @@ int check_for_deadlock()
      * 1. Store the stat filename for this diner into a buffer. Use the sprintf
      * library call.
      */
-     sprintf (filename, "/proc/self/task/%d/stat", diners[i].tid);
+    sprintf (filename, "/proc/self/task/%d/stat", diners[i].tid);
 
     /* 
      * 2. Use fopen to open the stat file as a file stream. Open it
@@ -246,37 +245,43 @@ int check_for_deadlock()
      * HINT: Use the the * qualifier to skip tokens without storing them.
      */
 
-    for(i = 0; i < FIELDS_TO_IGNORE; i++){
-      fscanf(statf, "%*s");
-    }
+    //for(i = 0; i < FIELDS_TO_IGNORE; i++){
+    //  fscanf(statf, "%*s");
+    //}
+    fscanf(statf, "%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s");
 
-    
+
     /* 
      * 4. Read the time values you want. Use fscanf again. 
      */ 
 
     fscanf(statf, "%lu", &new_user_time);
     fscanf(statf, "%lu", &new_sys_time);
-   
 
 
-   
+
+
     /*
      * 5. Use time values to determine if deadlock has occurred.
      */
-   
-    if(new_user_time != user_time[i]){
+
+    if(new_user_time > user_time[i]){
       deadlock = 0;
-      user_progress[i] += new_user_time - user_time[i];
     }
-    else if(new_sys_time != sys_time[i]){
+    else if(new_sys_time > sys_time[i]){
       deadlock = 0;
-      sys_progress[i] += new_sys_time - sys_time[i];
     }
-
-
-
     
+    
+    user_progress[i] = new_user_time - user_time[i];
+    user_time[i] = new_user_time;
+    
+    sys_progress[i] = new_sys_time - sys_time[i];
+    sys_time[i] = new_sys_time;
+
+
+
+
 
 
     /*
@@ -286,7 +291,7 @@ int check_for_deadlock()
     fclose(statf);
 
   }
-  
+
   return deadlock;
 }
 
