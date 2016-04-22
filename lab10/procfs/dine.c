@@ -245,9 +245,6 @@ int check_for_deadlock()
      * HINT: Use the the * qualifier to skip tokens without storing them.
      */
 
-    //for(i = 0; i < FIELDS_TO_IGNORE; i++){
-    //  fscanf(statf, "%*s");
-    //}
     fscanf(statf, "%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s%*s");
 
 
