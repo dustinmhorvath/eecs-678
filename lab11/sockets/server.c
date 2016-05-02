@@ -88,15 +88,14 @@ int main(int argc, char *argv[])
    * write the line back to the client. Continue until there are no
    * more lines to read.
    */
-  while ( 1  ) {
+  while ( read(session_sockfd, buf, BSIZE) > 0  ) {
+        
     
-    read(session_sockfd, buf, BSIZE);
-    
-    printf("RECEIVED:\n%s", buf);
-    printf("SENDING:\n%s\n", buf);
+    printf("SERVER RECEIVED:\n%s", buf);
 
     // Send the uppercase string to the socket
     convert_string(buf);
+    printf("SERVER SENDING:\n%s\n", buf);
     write(session_sockfd, buf, BSIZE);
   }
 

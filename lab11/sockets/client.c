@@ -53,14 +53,14 @@ int main(int argc, char *argv[])
    * the next string
    */
   for (i = 0; i < NSTRS; i++) {
-    printf("SENDING:\n%s", strs[i]);
+    printf("\nCLIENT SENDING:\n%s\n", strs[i]);
    
     // Write the lowercase string to the socket
     write(sockfd, strs[i], BSIZE);
     // Hopefully read out an uppercase string from the server's reply
-    read(sockfd, buf, BSIZE);
+    read(sockfd, buf, BSIZE) <= 0;
     
-    printf("RECEIVED:\n%s\n", buf);
+    printf("CLIENT RECEIVED:\n%s\n", buf);
 
   }
 
