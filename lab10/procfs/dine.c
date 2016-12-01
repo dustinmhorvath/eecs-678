@@ -17,7 +17,7 @@
 #define FIELDS_TO_IGNORE 13
 
 #define DEADLOCK 1
-#define ACTIVE_DURATION 200
+#define ACTIVE_DURATION 500
 
 typedef struct {
   pthread_t thread;
@@ -256,8 +256,6 @@ int check_for_deadlock()
     fscanf(statf, "%lu", &new_sys_time);
 
 
-
-
     /*
      * 5. Use time values to determine if deadlock has occurred.
      */
@@ -270,11 +268,12 @@ int check_for_deadlock()
     }
     
     
+    sys_progress[i] = new_sys_time - sys_time[i];
+    sys_time[i] = new_sys_time;
+
     user_progress[i] = new_user_time - user_time[i];
     user_time[i] = new_user_time;
     
-    sys_progress[i] = new_sys_time - sys_time[i];
-    sys_time[i] = new_sys_time;
 
 
 
